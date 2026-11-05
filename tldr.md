@@ -7,7 +7,7 @@ Użytkownik testując swoje umiejętności pisania, nie może widzieć tekstu, m
 Ciekawe rzeczy do poszukania (mały research jako część pracy): 
 + jak ocenić trudność takiego 'dyktanda' -- potrzebne jest jakiś aparat statystyczny / własny model językowy 
 + zliczanie błędów -- nie jest to prosta odległość levenshteina
-+ wyjaśnianie błędów -- niektóre z zasad są do wyjaśnienia i można by je wdrożyć (np po p używamy rz, w pióro jest ó bo wymienia się na pierze) 
++ wyjaśnianie błędów -- niektóre z zasad są do wyjaśnienia i można by je wdrożyć (np `po p używamy rz, w pióro jest ó bo wymienia się na e w pierze`) 
 + adaptacyjność -- program mógłby zbierać informacje o użytkowniku i sugerować dalsze kroki w nauce, zapamiętywać problematyczne wyrazy itp  
 
 
@@ -18,15 +18,12 @@ Przydatne funckcjonalności:
 + Ekran po dyktandzie: diff z podświetleniem i wyjaśnieniem reguły.
 + Ekranowa klawiatura z polskimi znakami dla młodszych użytkowników.
 
-Parę pprawek: istnieją pewne rozwiązania, lepsze i gorsze: 
+Parę poprawek: istnieją pewne rozwiązania, lepsze i gorsze: 
 + speecher.org -- super interface, szerokie narzędize, tylko 16 tekstów, bardzo multi-jezkowe, nie konkretnie dla polskiego 
 + dyktanda.net -- dosyć podstawowe z nienajlepszym interface'm 
 
 
-## mvp + dwa elementy badawcze 
-+ mvp: dytkando ze sluchy, wpisywanie, diff, podstawowe statystyki, konta nauczyciel-uczen 
-+ modul madawczy A; automatyczna detekscja, grupwoanie i klsyfkiacja bledow ortografcicznych h
-+ modul badawczy B: wyjasnianie beldow, adaptatcyjny dobor kolejnych cwiczen 
+## mvp +  elementy do zbadania  
 
 
 | Komponent           | Odpowiedzialność                                          | Priorytet     |
@@ -34,21 +31,24 @@ Parę pprawek: istnieją pewne rozwiązania, lepsze i gorsze:
 | Konta i dane | profil, statstyki, dane, indywidualny uzytkownik| MVP           |
 | Biblioteka dyktand  | Tekst, metadane, reguły, poziom, autor, status publikacji | MVP           |
 | Odtwarzacz audio    | TTS, segmenty, tempo, powtórzenia, limit odsłuchów        | MVP           |
-| Silnik porównania   | Normalizacja, wyrównanie, diff, kandydaci błędów          | MVP + badania |
-| Ocena trudności  | na podstawie tekstu dyktanda    | Iteracja 2           |
-| Klasyfikator błędów | Kategorie ortograficzne, pewność, wyjaśnienie             | Badania       |
+| Silnik porównania   | Normalizacja, wyrównanie, diff, kandydaci błędów          | MVP  |
+| Klasyfikator błędów | Kategorie ortograficzne, pewność, wyjaśnienie             | MVP + dalsze iteracje       |
+| Podstawowe dodawanie dyktand   | z przygowoanego tekstu| MVP    |
+| Inteligentne generowanie i rekomendacja dyktand   | na podstawie błędów w profilu| Iteracja 2    |
+| Ocena trudności  | na podstawie tekstu dyktanda: liczby 'pułapek' i statystyczności słowa    | Iteracja 2           |
 | Profil ucznia       | Historia, słabe reguły, powtórki, rekomendacje            | Iteracja 2    |
-| Autoryzacja i role  | Uczeń, nauczyciel, rodzic/opiekun; klasy i przypisania    | Iteracja 2           |
-| Panel nauczyciela   | Zadania, terminy, heatmapa klasy, eksport CSV             | Iteracja 2    |
-| Generator dyktand   | „10 wyrazów z ó wymiennym, poziom X”                      | Iteracja 3    |
+| Wyjaśnianie błędów   | Po zidentyfikowaniu, próba automatycznego wyjaśnienia jaką z reguł została złamana       | dalszy kierunek    |
+| Autoryzacja i role  | Uczeń, nauczyciel, rodzic/opiekun; klasy i przypisania    | dalszy kierunek           |
+| Panel nauczyciela   | Zadania, terminy, heatmapa klasy, eksport CSV             | dalszy kierunek    |
 
 
-## Kolejność prac 
+
+
 
 ### Decyzje projektowe 
-+ co jest jednym bł3edem 
++ co jest jednym błędem 
 + interpunkcja do rozstrzygnięcia 
-+ format danychh 
++ format danychh
 
 ### silnik błedów 
 ```
@@ -84,16 +84,43 @@ Warto rozważyć pewną hierarchie błedów:
 | ą_om_on       | robiom → robią                                 |
 | ę_em_en       | widzem → widzę                                 |
 | interpunkcja  | brak przecinka, błędny znak końcowy            |
-| pominięcie    | brakujące słowo                                |
+| pominięcie    | brakujące słowo                                | 
 | dodanie       | zbędne słowo                                   |
-| inny          | nie sklasyfikowane automatycznie               |
+| inny / pojedyncza literówka / zamiana liter          | nie sklasyfikowane automatycznie               |
 
 
 ### trudność dyktanda: 
 
 koncepcja oceny truności: 
 
-osobna trudność językowa i dyktandyczna(?) 
+Proste podejście (MVP): na podstawie listy 'pułapek' ortograficznych i częstości słów 
+
+Docelowe (iteracja 2): uwzględnienie statyki cząstek wyrazowych / tokenów  
+
+popatrzeć w tekście z błędami jak często w danych tokenach popełniane są błędy. 
+np. podział wg sylab / n-gramów 
+
+```
+pż bardzo rzadkie: sypże 
+
+prze szłość  
+
+gó ra
+gu ma 
+
+rów ni na 
+fru wa 
+
+zół tko 
+rzu cać
+
+pie gża  
+pod grzać 
+
+ohy da 
+och ła py 
+zes chnię ty  
+```
 
 
 ### adaptacyjność 
@@ -103,16 +130,17 @@ osobna trudność językowa i dyktandyczna(?)
 + typ błędu 
 
 **profil słabości/siły** 
-+ najczestsze typyy błedów 
++ najczestsze typy błedów 
 + słow ktore są powtarzalnym probelmem 
  itp 
 
 Prawdziwwa daptacyjność: 
-+ (prościej) algorytm wyboru dyktanda z dostępnych h
+**(prościej) algorytm wyboru dyktanda z dostępnych**
+
 + (trudniej) generacja dopasowanego indywidualnie dyktanda 
 
 
-### typy ról 
+### typy ról (dalszy kierunek) 
 
 | Rola           | Uprawnienia                                                   |
 | -------------- | ------------------------------------------------------------- |
@@ -122,43 +150,6 @@ Prawdziwwa daptacyjność:
 | Admin          | Zarządza regułami, słownikiem wyjątków, treścią               |
 
 
-# od nowa 
-
-
-## Uwagi do tamtego planu
-
-1. **Niespójność MVP.** Wypunktowany MVP zawiera „konta nauczyciel–uczeń", a tabela wrzuca role i autoryzację do iteracji 2. Proponuję rozstrzygnąć tak: MVP ma tylko użytkownika indywidualnego, ale schemat danych od razu przewiduje grupy i przypisania (patrz niżej).
-2. **Klasyfikator błędów to nie tylko „badania".** Dla polskiej ortografii prosty klasyfikator regułowy jest tani i daje największą wartość produktu (diff z wyjaśnieniem), czyli główną przewagę nad dyktanda.net. W badania wchodzą dopiero przypadki trudne: wyjaśnianie przez wymianę morfologiczną, niejednoznaczne edycje, interpunkcja.
-3. **Brakuje kategorii „literówka".** Trzeba odróżnić pomyłkę regułową (ó↔u) od zwykłego przeklepania. Edycja pasująca do znanej pary pomyłek (ó/u, rz/ż, ch/h, ą/om, ę/em, ś/si, ź/zi, ć/ci) to błąd ortograficzny, a pozostałe edycje o odległości 1 to literówka. Warto też rozbić „nie" na szerszą kategorię pisowni łącznej i rozdzielnej (by, -że, przedrostki). W przykładzie „rz_z" jest chyba pomyłka: „morze → morze" powinno być „może → morze".
-4. **Dwupoziomowa taksonomia:** domena (ortografia, interpunkcja, wielka litera, łączna/rozdzielna) i reguła w niej. Przechowywana jako **dane w tabeli**, a nie enum w kodzie, z wersjonowaniem.
-
-## Kluczowa decyzja architektoniczna
-
-**Przechowuj surowe dane, a wszystko pochodne licz na nowo.** Zapisuj dokładnie to, co użytkownik wpisał, per kawałek, razem z liczbą odsłuchów. Wynik analizy zapisuj z polem `analyzer_version`. Wtedy każde ulepszenie silnika błędów, klasyfikatora czy modelu trudności można przeliczyć wstecz na całej historii, bez zmiany architektury. Z tego powodu iteracyjny rozwój jest tu tani.
-
-Druga zasada: **silnik analizy jako czysta biblioteka** (wejście: tekst wzorcowy z adnotacjami i tekst użytkownika; wyjście: lista błędów), bez I/O i bez bazy. Można ją testować zbiorem złotych przypadków i rozwijać niezależnie od reszty. Python jest tu naturalny (Morfeusz 2 / SGJP do odmiany, spaCy). Wersja w Rust → WASM do natychmiastowej informacji zwrotnej w trybie ćwiczeniowym byłaby ciekawa, ale to optymalizacja na później.
-
-## Model danych gotowy na rozszerzenia
-
-- **Role jako relacja w grupie, nie globalny atrybut.** `users`, `groups` (typ: klasa / rodzina), `memberships(user, group, role)`. Nauczyciel–klasa i rodzic–dzieci to ten sam mechanizm. Użytkownik indywidualny nie ma żadnej grupy.
-- **`assignments`** (dictation_version, odbiorca: grupa lub użytkownik, `due_at` nullable, ustawienia trybu). Podejście do dyktanda ma nullable `assignment_id`, więc swobodne ćwiczenie to po prostu przypadek bez przypisania. Widok „moje zadania" dla ucznia to zapytanie, które w MVP zwraca pustą listę.
-- **`dictations` + niezmienne `dictation_versions`** (pola `owner_id`, `visibility`, `status`). Podejścia wskazują wersję, więc edycja tekstu nie psuje historii. W MVP właścicielem jest „system", a edytor użytkownika dojdzie później bez zmian schematu.
-- **Autoryzacja przez jedną funkcję** `can(user, action, resource)` od pierwszego dnia, nawet jeśli w MVP prawie zawsze zwraca true.
-- **RODO:** dla dzieci w Polsce zgoda na przetwarzanie danych jest wymagana poniżej 16. roku życia. Kolejny powód, by konto indywidualne mogło działać bez danych osobowych.
-
-## Elementy trudne
-
-**Definicja błędu i wyrównanie.** Zaproponuj wyrównanie na poziomie tokenów z operacjami 1:1, 1:2 i 2:1 (obsługuje „napewno" ↔ „na pewno"), potem wyrównanie znakowe wewnątrz pary słów, które daje konkretne edycje (ó→u). Jeden błąd to jedna para (słowo wzorcowe, słowo użytkownika) z jedną lub kilkoma kategoriami. Zasady oceny (czy dwa błędy w słowie to jeden, ile interpunkcyjnych równa się ortograficznemu) niech będą konfigurowalnym profilem oceniania, a nie zaszyte w silniku. Interpunkcję licz osobnym torem.
-
-**Dzielenie na kawałki.** Klasyczna procedura: całość raz, potem frazy 2 razy, na końcu całość. Granice kawałków to dane w dyktandzie, generowane heurystyką (zdanie, a gdy dłuższe niż ok. 12 słów, podział na przecinkach i spójnikach), z ręczną korektą. Dzięki temu nie jest to decyzja kodu, tylko treści.
-
-**TTS.** Teksty są statyczne, więc **generuj audio z góry** dla każdego kawałka i trzymaj w storage. Wtedy koszt i opóźnienie nie zależą od liczby użytkowników, a każdy plik można odsłuchać przed publikacją. Potrzebne będzie pole z wymową (SSML lub zapis fonetyczny) dla liczb, skrótów i nazw własnych. Do sprawdzenia: polskie głosy neuronowe w chmurze (Azure, Google) versus open source (Piper) oraz licencje na dystrybucję nagrań. Tempo najprościej regulować odtwarzaniem z inną prędkością, a dopiero potem osobnym renderem.
-
-**Trudność.** Rozdziel dwa wymiary: trudność językowa (rzadkość słów, długość zdań) i ortograficzna (gęstość i waga pułapek). Na starcie wagi z heurystyk: częstość słowa, kategoria reguły, wyjątki. Gdy zbierzesz dane, prawdziwym aparatem statystycznym jest model typu **IRT/Rasch**: zdolność ucznia θ i trudność pułapki b, z czego trudność dyktanda to oczekiwana liczba błędów dla danego θ. Surprisal z polskiego modelu językowego może być jedną z cech do prognozy b, ale na zimny start wystarczą heurystyki.
-
-**Adaptacyjność.** Wersja prosta: wektor słabości per reguła i słowo (Elo albo powtórki w stylu FSRS) i wybór dyktanda z biblioteki maksymalizującego pokrycie słabych reguł przy poziomie ok. 70–80% poprawnych. Wersja trudna (generowanie na zamówienie) dopiero na końcu.
-
-**Treści.** Początkowe teksty: domena publiczna (Wolne Lektury) plus własne. Automatyczne oznaczanie pułapek słownikiem i regułami daje pierwszą wersję adnotacji do ręcznej korekty. Unikaj kopiowania dyktand z konkursów i serwisów.
 
 ## Kolejność prac
 
@@ -169,7 +160,7 @@ Druga zasada: **silnik analizy jako czysta biblioteka** (wejście: tekst wzorcow
 | 2. Szkielet end-to-end | pipeline audio, odtwarzacz z kawałkami, pole wpisu, ekran wyniku z diffem | działa jedno dyktando od początku do końca |
 | 3. MVP | konta indywidualne, historia i statystyki per reguła i słowo, tryb ćwiczeniowy vs sprawdzian, ekranowa klawiatura | pierwsi testerzy |
 | 4. Iteracja 2 | grupy, role, przypisania z terminem, panel nauczyciela, heatmapa, CSV, ocena trudności z danych | pilotaż w jednej klasie |
-| 5. Iteracja 3 | edytor dyktand, adaptacyjny dobór, wyjaśnianie przez wymianę morfologiczną, generator | |
+| 5. dalszy kierunek | edytor dyktand, adaptacyjny dobór, wyjaśnianie przez wymianę morfologiczną, generator | |
 
 Szkielet z etapu 2 warto zrobić wcześnie, nawet na prymitywnym silniku, żeby od razu widzieć, co naprawdę boli w interfejsie. Silnik z etapu 1 jest jednak najbardziej ryzykowną i najciekawszą częścią, więc zaczynałbym od niego i od złotego zestawu.
 
@@ -193,26 +184,15 @@ Przepisanie silnika na Rust/WASM (natychmiastowa informacja w trybie ćwiczeniow
 
 ## Generowanie mowy
 
-Teksty są statyczne, więc **nie używaj TTS w czasie rzeczywistym**. Zrób potok na etapie tworzenia treści:
-
-1. Tekst z adnotacjami → podział na kawałki → nadpisania wymowy (SSML) dla liczb, skrótów i nazw własnych.
-2. Synteza każdego kawałka osobno oraz całości.
-3. Normalizacja głośności, przycięcie ciszy, kodowanie (Opus lub MP3).
-4. Zapis do object storage pod nazwą będącą hashem (tekst + głos + SSML + wersja dostawcy). Dzięki temu proces jest idempotentny i przegenerowuje tylko to, co się zmieniło.
-5. Manifest (id kawałków, URL, czasy trwania) trafia do wersji dyktanda.
-
-W przeglądarce wystarczy `<audio>` z prefetchem. Tempo to `playbackRate` z zachowaniem wysokości dźwięku, a przy dużych zmianach lepszy osobny render. Limit odsłuchów licz po stronie serwera (zdarzenie „play" w podejściu), bo licznik w kliencie łatwo obejść.
-
-**Koszt syntezy jest zaniedbywalny.** Głosy neuronowe w głównych chmurach kosztują rzędu 16 USD za milion znaków, a wersje HD około 22–30 USD. Azure ma darmowy limit 500 tys. znaków miesięcznie, a Google 1 mln znaków miesięcznie dla głosów neuronowych. 100 dyktand po ok. 1500 znaków, z całością i kawałkami, to rzędu 300 tys. znaków, czyli kilka dolarów jednorazowo albo zero w darmowym limicie. Wybór dostawcy zależy więc od jakości polskich głosów (zrób test odsłuchowy) i warunków licencji na przechowywanie wygenerowanego audio. Schowaj dostawcę za interfejsem `TTSProvider`. Open source (Piper, XTTS) jest opcją, ale wymaga własnej infrastruktury i weryfikacji jakości po polsku.
-
-Koszty zaczną rosnąć dopiero z edytorem własnych dyktand. Wtedy synteza powinna być asynchronicznym zadaniem z kwotą na użytkownika.
+Ma być zapisana per dyktando, pocięta na odpowiednie kawałki. 
+Przetestowanie (subiektywne) sensownych rozwiązań na rynku pod katem polskiego, które najlepiej sobie radzą z trudnymi wyrazami np: `chrząszcz`. 
 
 ## Bazy danych
 
 - **PostgreSQL** jako jedyna baza: tabele relacyjne dla użytkowników, grup, przypisań, podejść i błędów, a JSONB dla adnotacji i surowych wpisów. Agregaty (heatmapa klasy, profil ucznia) to zwykły `GROUP BY` po tabeli błędów. Do milionów wierszy wystarczą indeksy, potem tabele zagregowane lub widoki zmaterializowane.
-- **Object storage** zgodny z S3 (Cloudflare R2, Backblaze, Hetzner, S3) na audio, z CDN.
-- Słowniki morfologiczne to pliki ładowane przez silnik, nie baza.
-- **Pomijaj** na starcie: Redis, Mongo, Elasticsearch, bazy wektorowe. Kolejka zadań (TTS, przeliczenia) może działać na Postgresie. Do badań eksportuj dane do Parquet i analizuj w DuckDB.
+- **Object storage** na pliki .mp3 
+
+
 
 ## Wdrożenie i rollout
 
@@ -220,29 +200,100 @@ Koszty zaczną rosnąć dopiero z edytorem własnych dyktand. Wtedy synteza powi
 - CI (GitHub Actions): testy, w tym złoty zestaw silnika, potem build obrazu i automatyczny deploy. Środowiska: lokalne, staging, produkcja.
 - Migracje schematu wstecznie zgodne (dodajesz, migrujesz, dopiero potem usuwasz), bo schemat będzie się zmieniał.
 - Funkcje (przypisania, role) wdrażane za flagami, zanim będą widoczne dla użytkowników.
-- Etapy: prywatna alfa (ty i znajomi), zamknięta beta z jedną klasą lub nauczycielem, potem otwarcie.
-- Podstawy operacyjne: codzienny zrzut Postgresa do object storage z próbnym odtworzeniem, Sentry i monitoring dostępności.
-- Konta dzieci: tworzone przez nauczyciela z kodem klasy, bez wymogu adresu e-mail. Hosting w UE, mechanizm usuwania danych, zgody opiekunów dla młodszych użytkowników.
 
-Skala nie jest problemem. Klasa 30 osób startująca jednocześnie to burza kilkudziesięciu żądań, a frontend i audio idą z CDN. Jeden mały serwer to wytrzyma.
+--- 
 
-## Czy hosting w chmurze, a nie na laptopie
+## Stack
 
-Tak. Laptop nie da dostępności, certyfikatów, kopii zapasowych ani stabilnego adresu, a szkolne sieci często blokują nietypowe połączenia. Chmura w tym wariancie nie musi być droga.
-
-**Wariant A: jeden VPS (Hetzner) z docker compose (aplikacja + Postgres + Caddy)** plus object storage i darmowy hosting statycznego frontendu. W zestawieniu z sierpnia 2026 małe instancje Hetznera (CX23, CAX11) kosztują około 5,5–6 € miesięcznie bez VAT, ale Hetzner podnosił ceny już cztery razy w 2026 roku, więc sprawdź aktualny cennik przed decyzją.
-
-**Wariant B: PaaS z zarządzanym Postgresem** (np. Fly, Render, Neon, Supabase). Mniej administracji i automatyczne kopie, ale drożej. Tego nie sprawdzałem w aktualnych cennikach, więc traktuj widełki z tabeli jako szacunek.
-
-| Pozycja | MVP / alfa (wariant A) | Pilotaż w szkołach |
+| Warstwa | Wybór | Uwagi |
 |---|---|---|
-| Serwer | ok. 6–7 € | większy VPS lub PaaS + zarządzany Postgres |
-| Audio (jednorazowo) | ok. 0–5 USD | to samo, rośnie z edytorem |
-| Object storage + CDN | ok. 0–2 € | kilka € (50 MB audio na 100 dyktand to drobiazg) |
-| Domena | ok. 50 zł rocznie | to samo |
-| Monitoring | darmowe plany | darmowe plany |
-| **Razem** | **ok. 8–12 € (30–50 zł) miesięcznie** | **szacunkowo 25–50 €** |
+| Silnik | Python, biblioteka + CLI | bez zmian, bez zależności od frameworka |
+| API | **FastAPI** | JSON, schematy w Pydantic, z których wychodzi OpenAPI |
+| Baza | **PostgreSQL** + **SQLAlchemy** + **Alembic** | migracje od pierwszego dnia, JSONB na adnotacje |
+| Frontend | **React + TypeScript + Vite** | React Router, TanStack Query do zapytań; bez Reduxa |
+| Typy | generowane z OpenAPI (np. `openapi-typescript`) | jedno źródło prawdy dla kontraktu front–back |
+| Stylowanie | zwykły CSS lub Tailwind | nie bierz biblioteki komponentów, dopóki nie boli |
+| Auth | e-mail + hasło, sesja w ciasteczku | gotowa biblioteka do FastAPI albo kilkadziesiąt linii własnych, sprawdź aktualny stan bibliotek |
+| Audio | pliki generowane offline, serwowane statycznie | ścieżki zapisane w bazie |
+| Testy | pytest (silnik, API na testowej bazie), opcjonalnie Vitest | |
+| Uruchamianie | **docker compose** (api + db) lokalnie i w produkcji | front buduje się do statycznych plików serwowanych przez API lub przez prosty reverse proxy |
 
-Moja rekomendacja: zacząć od wariantu A w kontenerach, a do pilotażu z prawdziwymi uczniami przejść na zarządzany Postgres, bo kopie zapasowe danych dzieci wolisz mieć po stronie dostawcy. Przy kontenerach i dumpach to przeprowadzka na jeden wieczór, bez zmiany architektury.
+## Ważne decyzje architektoniczne
 
-Mogę teraz rozpisać etap 0 (definicja błędu, taksonomia v1, schemat JSON dyktanda) albo wstępny schemat tabel Postgresa pod model grup i przypisań.
+1. **Tekst dyktanda nigdy nie trafia do przeglądarki przed złożeniem odpowiedzi.** Endpoint dyktanda zwraca tylko metadane i adresy audio kawałków. Tekst wzorcowy zostaje na serwerze i jest używany wyłącznie przez silnik. W trybie ćwiczeniowym serwer po wysłaniu wpisu dla kawałka zwraca diff tego kawałka. Inaczej użytkownik zajrzy w zakładkę sieci.
+2. **Silnik działa po stronie serwera.** Każde sprawdzenie to jedno wywołanie API. Latencja w trybie ćwiczeniowym jest akceptowalna, a nie musisz utrzymywać dwóch implementacji.
+3. **Źródłem prawdy dla dyktand są pliki w repo** (JSON/YAML). Skrypt `seed` wczytuje je do bazy. Dzięki temu dyktanda są wersjonowane w gicie, a baza to tylko stan wykonania.
+4. **Limit odsłuchów w sprawdzianie:** w MVP licz po stronie klienta i zapisuj w podejściu. Wymuszenie po stronie serwera (audio przez endpoint, który liczy żądania) zostaw na później i opisz jako ograniczenie.
+
+## Schemat bazy (MVP)
+
+- `users` (id, e-mail, hasło zahaszowane, data utworzenia)
+- `dictations` (id, slug, tytuł, poziom, wersja, metadane JSONB, status)
+- `chunks` (id, dictation_id, kolejność, tekst wzorcowy, ścieżka audio)
+- `attempts` (id, user_id, dictation_id, tryb, status, czas rozpoczęcia i zakończenia, liczba odsłuchów)
+- `attempt_chunks` (attempt_id, chunk_id, surowy wpis użytkownika)
+- `errors` (attempt_chunk_id, kategoria, oczekiwane, wpisane, pozycja, pewność)
+
+Statystyki per reguła to zwykły `GROUP BY kategoria` po `errors`. Statystyki per słowo wymagają pola „wyraz wzorcowy" w `errors`, więc zapisz je od razu, bo dodanie później boli.
+
+## Endpointy (szkic)
+
+- `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`
+- `GET /dictations`, `GET /dictations/{id}` (bez tekstu, z kawałkami audio)
+- `POST /attempts` (start podejścia, tryb), `POST /attempts/{id}/chunks/{n}` (wpis kawałka), `POST /attempts/{id}/finish`
+- `GET /attempts/{id}` (wynik z diffem i błędami)
+- `GET /me/stats` (agregaty per reguła i per słowo), `GET /me/attempts`
+
+## Widoki React
+
+- Lista dyktand
+- Ekran dyktanda: odtwarzacz kawałków (powtórz, dalej, tempo), pole wpisu, ekranowa klawiatura, licznik odsłuchów
+- Ekran wyniku: diff z podświetleniem, lista błędów z kategorią i wyjaśnieniem
+- Historia podejść
+- Statystyki: błędy per reguła, najczęstsze słowa
+- Logowanie/rejestracja
+
+## Etapy
+
+**Etap 0. Specyfikacja**: definicja błędu z przypadkami granicznymi, taksonomia v1, format dyktanda, złoty zestaw par.
+*Kryterium:* dokument + dane testowe.
+
+**Etap 1. Silnik** : normalizacja, wyrównanie dwupoziomowe, klasyfikacja regułowa, literówki, CLI.
+*Kryterium:* przechodzi złoty zestaw, z precision/recall per kategoria.
+
+**Etap 2. Audio**: skrypt generujący kawałki i krótki test kilku silników TTS na trudnych wyrazach.
+*Kryterium:* jedno dyktando z dobrym audio.
+
+**Etap 3. Backend**: schemat, migracje, seed dyktand, endpointy, testy API na testowej bazie. Sprawdzenie ręcznie przez dokumentację OpenAPI lub skrypt.
+*Kryterium:* całe dyktando da się przejść samym API, a tekst wzorcowy nie wycieka w żadnej odpowiedzi (test).
+
+**Etap 4. Frontend szkieletowy**: lista, odtwarzacz, pole wpisu, ekran wyniku. Bez klawiatury i statystyk.
+*Kryterium:* jedno dyktando działa end-to-end w przeglądarce.
+
+**Etap 5. MVP**: konta, historia, statystyki per reguła i słowo, tryb ćwiczeniowy vs sprawdzian, tempo, ekranowa klawiatura, kilkanaście dyktand, wdrożenie.
+*Kryterium:* pierwsi testerzy przechodzą dyktando bez Twojej pomocy.
+
+**Później:** ocena trudności z danych, adaptacyjny dobór, wyjaśnianie przez wymianę morfologiczną, role, klasy, panel nauczyciela, edytor i generator.
+
+## Struktura repozytorium
+
+```
+dyktando/
+├── engine/            # biblioteka Pythona (bez zależności od API)
+├── api/               # FastAPI, modele, migracje (alembic)
+├── web/               # React + TS (Vite)
+├── data/
+│   ├── dictations/    # JSON/YAML
+│   └── gold/          # złoty zestaw
+├── tts/               # skrypt generujący audio
+├── tests/
+└── docker-compose.yml
+```
+
+## Co się zmieniło względem poprzedniej wersji i na co uważać
+
+- React i Postgres dokładają pracy infrastrukturalnej (migracje, auth, build frontendu). Żeby nie zjadło to części badawczej, trzymaj kolejność: **silnik i złoty zestaw przed backendem**, a frontend na początku zrób brzydki, ale kompletny.
+- Auth jest najłatwiejszym miejscem do przeinwestowania. Weź gotowe rozwiązanie i nie rozbudowuj (bez resetu hasła, weryfikacji e-maila i ról w MVP).
+- Konta zbierają dane osobowe (e-mail), więc dopisz do planu krótką notkę o RODO. Przy użytkownikach-dzieciach to ważniejsze, więc na etapie pilotażu rozważ konta anonimowe lub pseudonimy.
+
+Mogę teraz rozpisać Etap 0: definicję błędu, taksonomię v1 i schemat JSON dyktanda, albo szczegółowo schemat bazy z typami i indeksami.
